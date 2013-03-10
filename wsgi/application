@@ -7,9 +7,9 @@ if 'APPDIR' in os.environ:
 os.environ['PYTHON_EGG_CACHE'] = os.path.join(virtenv, 'lib/python2.6/site-packages')
 virtualenv = os.path.join(virtenv, 'bin/activate_this.py')
 try:
-    execfile(virtualenv, dict(__file__=virtualenv))
+  execfile(virtualenv, dict(__file__=virtualenv))
 except IOError:
-    pass
+  pass
 #
 # IMPORTANT: Put any additional includes below this line.  If placed above this
 # line, it's possible required libraries won't be in your searchable path
@@ -17,16 +17,16 @@ except IOError:
 
 def application(environ, start_response):
 
-	ctype = 'text/plain'
-	if environ['PATH_INFO'] == '/health':
-		response_body = "1"
-	elif environ['PATH_INFO'] == '/env':
-		response_body = ['%s: %s' % (key, value)
+  ctype = 'text/plain'
+  if environ['PATH_INFO'] == '/health':
+    response_body = "1"
+  elif environ['PATH_INFO'] == '/env':
+    response_body = ['%s: %s' % (key, value)
                     for key, value in sorted(environ.items())]
-		response_body = '\n'.join(response_body)
-	else:
-		ctype = 'text/html'
-		response_body = '''<!doctype html>
+    response_body = '\n'.join(response_body)
+  else:
+    ctype = 'text/html'
+    response_body = '''<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -78,48 +78,48 @@ def application(environ, start_response):
   </style>
 </head>
 <body>'''
-		response_body += '''  <h1>Hello</h1>
+    response_body += '''  <h1>Hello</h1>
   <p>Place your application here</p>
   <h2>What's next?</h2>
   <p>Place your application here</p>
 '''
-                import tempfile
-                d = tempfile.mkdtemp()
-                import shutil
-                import os
-                shutil.copy(os.path.join(os.environ['OPENSHIFT_REPO_DIR'], 'data', 'redbot'), d)
-		os.mkdir(os.path.join(d, 'strategie1'))
+    import tempfile
+    d = tempfile.mkdtemp()
+    import shutil
+    import os
+    shutil.copy(os.path.join(os.environ['OPENSHIFT_REPO_DIR'], 'data', 'redbot'), d)
+    os.mkdir(os.path.join(d, 'strategie1'))
                 shutil.copy(os.path.join(os.environ['OPENSHIFT_REPO_DIR'], 'data', 'strilej'), os.path.join(d, 'strategie1'))
-		os.mkdir(os.path.join(d, 'strategie2'))
+    os.mkdir(os.path.join(d, 'strategie2'))
                 shutil.copy(os.path.join(os.environ['OPENSHIFT_REPO_DIR'], 'data', 'strilej'), os.path.join(d, 'strategie2'))
-		os.mkdir(os.path.join(d, 'replay'))
-		import subprocess
-                # Run command with arguments and return its output as a byte string.
-		# If the return code was non-zero it raises a CalledProcessError.
-		# The CalledProcessError object will have the return code in the
-		# returncode attribute and any output in the output attribute.
-                p = subprocess.Popen(["ls", "-l", d], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
-                (stdoutdata, stderrdata) = p.communicate()
-		response_body += '<pre>%s</pre>' % stdoutdata
-                os.chdir(d)
-                response_body += '<h2>Play: %s</h2>' % d
-                p = subprocess.Popen(["./redbot", "-b", "replay", "strategie1/strilej", "strategie2/strilej"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
-                (stdoutdata, stderrdata) = p.communicate()
-		response_body += '<pre>%s</pre>' % stdoutdata
-                shutil.rmtree(d)
-		response_body += '''</body>
+    os.mkdir(os.path.join(d, 'replay'))
+    import subprocess
+    # Run command with arguments and return its output as a byte string.
+    # If the return code was non-zero it raises a CalledProcessError.
+    # The CalledProcessError object will have the return code in the
+    # returncode attribute and any output in the output attribute.
+    p = subprocess.Popen(["ls", "-l", d], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
+    (stdoutdata, stderrdata) = p.communicate()
+    response_body += '<pre>%s</pre>' % stdoutdata
+    os.chdir(d)
+    response_body += '<h2>Play: %s</h2>' % d
+    p = subprocess.Popen(["./redbot", "-b", "replay", "strategie1/strilej", "strategie2/strilej"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
+    (stdoutdata, stderrdata) = p.communicate()
+    response_body += '<pre>%s</pre>' % stdoutdata
+    shutil.rmtree(d)
+    response_body += '''</body>
 </html>'''
 
-	status = '200 OK'
-	response_headers = [('Content-Type', ctype), ('Content-Length', str(len(response_body)))]
-	start_response(status, response_headers)
-	return [response_body]
+  status = '200 OK'
+  response_headers = [('Content-Type', ctype), ('Content-Length', str(len(response_body)))]
+  start_response(status, response_headers)
+  return [response_body]
 
 #
 # Below for testing only
 #
 if __name__ == '__main__':
-	from wsgiref.simple_server import make_server
-	httpd = make_server('localhost', 8080, application)
-	# Wait for a single request, serve it and quit.
-	httpd.handle_request()
+  from wsgiref.simple_server import make_server
+  httpd = make_server('localhost', 8080, application)
+  # Wait for a single request, serve it and quit.
+  httpd.handle_request()
