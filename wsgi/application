@@ -88,7 +88,7 @@ def application(environ, start_response):
 		# If the return code was non-zero it raises a CalledProcessError.
 		# The CalledProcessError object will have the return code in the
 		# returncode attribute and any output in the output attribute.
-                p = subprocess.Popen(["ls", "-l"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
+                p = subprocess.Popen(["date"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
                 (stdoutdata, stderrdata) = p.communicate()
                 p.wait()
 		response_body += '<pre>%s</pre>' % stdoutdata
