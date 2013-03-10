@@ -37,10 +37,10 @@ def application(environ, start_response):
   }
   body {
     background: #333;
-    background: -webkit-linear-gradient(top, black, #666);
-    background: -o-linear-gradient(top, black, #666);
-    background: -moz-linear-gradient(top, black, #666);
-    background: linear-gradient(top, black, #666);
+    background: -webkit-linear-gradient(top, #222, #666);
+    background: -o-linear-gradient(top, #222, #666);
+    background: -moz-linear-gradient(top, #222, #666);
+    background: linear-gradient(top, #222, #666);
     color: white;
     font-family: "Helvetica Neue",Helvetica,"Liberation Sans",Arial,sans-serif;
     width: 40em;
@@ -83,15 +83,32 @@ def application(environ, start_response):
   <h2>What's next?</h2>
   <p>Place your application here</p>
 '''
+                import tempfile
+                d = tempfile.mkdtemp()
+                import shutil
+                import os
+                shutil.copy(os.path.join(os.environ['OPENSHIFT_REPO_DIR'], 'data', 'redbot'), d)
+		os.mkdir(os.path.join(d, 'strategie1'))
+                shutil.copy(os.path.join(os.environ['OPENSHIFT_REPO_DIR'], 'data', 'strilej'), os.path.join(d, 'strategie1'))
+		os.mkdir(os.path.join(d, 'strategie2'))
+                shutil.copy(os.path.join(os.environ['OPENSHIFT_REPO_DIR'], 'data', 'strilej'), os.path.join(d, 'strategie2'))
+		os.mkdir(os.path.join(d, 'replay'))
 		import subprocess
                 # Run command with arguments and return its output as a byte string.
 		# If the return code was non-zero it raises a CalledProcessError.
 		# The CalledProcessError object will have the return code in the
 		# returncode attribute and any output in the output attribute.
-                p = subprocess.Popen(["date"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
+                p = subprocess.Popen(["ls", "-l", d], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
                 (stdoutdata, stderrdata) = p.communicate()
                 p.wait()
 		response_body += '<pre>%s</pre>' % stdoutdata
+                os.chdir(d)
+                response_body += '<h2>Play: %s</h2>' % d
+                p = subprocess.Popen(["./redbot", "-b", "replay", "strategie1/strilej", "strategie2/strilej"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
+                (stdoutdata, stderrdata) = p.communicate()
+                p.wait()
+		response_body += '<pre>%s</pre>' % stdoutdata
+                shutil.rmtree(d)
 		response_body += '''</body>
 </html>'''
 
