@@ -89,9 +89,9 @@ def application(environ, start_response):
     import os
     shutil.copy(os.path.join(os.environ['OPENSHIFT_REPO_DIR'], 'data', 'redbot'), d)
     os.mkdir(os.path.join(d, 'strategie1'))
-                shutil.copy(os.path.join(os.environ['OPENSHIFT_REPO_DIR'], 'data', 'strilej'), os.path.join(d, 'strategie1'))
+    shutil.copy(os.path.join(os.environ['OPENSHIFT_REPO_DIR'], 'data', 'strilej'), os.path.join(d, 'strategie1'))
     os.mkdir(os.path.join(d, 'strategie2'))
-                shutil.copy(os.path.join(os.environ['OPENSHIFT_REPO_DIR'], 'data', 'strilej'), os.path.join(d, 'strategie2'))
+    shutil.copy(os.path.join(os.environ['OPENSHIFT_REPO_DIR'], 'data', 'strilej'), os.path.join(d, 'strategie2'))
     os.mkdir(os.path.join(d, 'replay'))
     import subprocess
     # Run command with arguments and return its output as a byte string.
