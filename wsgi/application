@@ -100,13 +100,11 @@ def application(environ, start_response):
 		# returncode attribute and any output in the output attribute.
                 p = subprocess.Popen(["ls", "-l", d], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
                 (stdoutdata, stderrdata) = p.communicate()
-                p.wait()
 		response_body += '<pre>%s</pre>' % stdoutdata
                 os.chdir(d)
                 response_body += '<h2>Play: %s</h2>' % d
                 p = subprocess.Popen(["./redbot", "-b", "replay", "strategie1/strilej", "strategie2/strilej"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
                 (stdoutdata, stderrdata) = p.communicate()
-                p.wait()
 		response_body += '<pre>%s</pre>' % stdoutdata
                 shutil.rmtree(d)
 		response_body += '''</body>
