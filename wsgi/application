@@ -15,49 +15,54 @@ except IOError:
 # line, it's possible required libraries won't be in your searchable path
 # 
 
-import data
-
 import os
-import shutil
-import subprocess
-import tempfile
+import sys
+import datetime
+import traceback
+
+sys.path.append('./libs')
+import pages
+import path
 
 def application(environ, start_response):
 
-  ctype = 'text/plain'
-  if environ['PATH_INFO'] == '/health':
-    response_body = "1"
-  elif environ['PATH_INFO'] == '/env':
-    response_body = ['%s: %s' % (key, value)
-                    for key, value in sorted(environ.items())]
-    response_body = '\n'.join(response_body)
-  else:
-    ctype = 'text/html'
-    response_body = data.header('Ahoy!')
-    #d = tempfile.mkdtemp()
-    #shutil.copy(os.path.join(os.environ['OPENSHIFT_REPO_DIR'], 'data', 'redbot'), d)
-    #os.mkdir(os.path.join(d, 'strategie1'))
-    #shutil.copy(os.path.join(os.environ['OPENSHIFT_REPO_DIR'], 'data', 'strilej'), os.path.join(d, 'strategie1'))
-    #os.mkdir(os.path.join(d, 'strategie2'))
-    #shutil.copy(os.path.join(os.environ['OPENSHIFT_REPO_DIR'], 'data', 'strilej'), os.path.join(d, 'strategie2'))
-    #os.mkdir(os.path.join(d, 'replay'))
-    ## Run command with arguments and return its output as a byte string.
-    ## If the return code was non-zero it raises a CalledProcessError.
-    ## The CalledProcessError object will have the return code in the
-    ## returncode attribute and any output in the output attribute.
-    #p = subprocess.Popen(["ls", "-l", d], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
-    #(stdoutdata, stderrdata) = p.communicate()
-    #response_body += '<pre>%s</pre>' % stdoutdata
-    #os.chdir(d)
-    #response_body += '<h2>Play: %s</h2>' % d
-    #p = subprocess.Popen(["./redbot", "-b", "replay", "strategie1/strilej", "strategie2/strilej"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
-    #(stdoutdata, stderrdata) = p.communicate()
-    #response_body += '<pre>%s</pre>' % stdoutdata
-    #shutil.rmtree(d)
-    response_body += data.footer()
-
+  ctype = 'text/html'
   status = '200 OK'
-  response_headers = [('Content-Type', ctype), ('Content-Length', str(len(response_body)))]
+  response_body = ''
+  response_headers_added = []
+
+  try:
+    if environ['PATH_INFO'] == '/':
+      response_body += pages.main(environ)
+    elif environ['PATH_INFO'].startswith('/game'):
+      if pages.is_authorized(environ):
+        uri = environ['PATH_INFO'].split('/')
+        if environ['PATH_INFO'] == '/game':
+          response_body += pages.game(environ)
+        elif environ['PATH_INFO'] == '/game/new':
+          g = pages.game_new(environ)
+          status = '303 See Other'
+          response_headers_added.append( \
+              ('Location', '/game/show/%s' % g.gameid))
+        elif environ['PATH_INFO'].startswith('/game/show/'):
+          response_body += pages.game_show(environ)
+        else:
+          raise Exception('Was not able to determine if you want me to create new game of show current one')
+      else:
+        status = '401 Authorization Required'
+        response_headers_added.append(('WWW-Authenticate', 'Basic realm="RedBot: Authenticated section"'))
+    else:
+      raise Exception('Unknown path')
+  except:
+    response_body += "<h2>Error occured at %s</h2>\n" % datetime.datetime.now()
+    response_body += "<pre>\n"
+    tb = traceback.format_exc()
+    response_body += tb
+    print tb   # we want it in error_log as well
+    response_body += "</pre>\n"
+    status = '500 Internal Server Error'
+
+  response_headers = [('Content-Type', ctype), ('Content-Length', str(len(response_body)))] + response_headers_added
   start_response(status, response_headers)
   return [response_body]
 
@@ -67,5 +72,4 @@ def application(environ, start_response):
 if __name__ == '__main__':
   from wsgiref.simple_server import make_server
   httpd = make_server('localhost', 8080, application)
-  # Wait for a single request, serve it and quit.
-  httpd.handle_request()
+  httpd.serve_forever()

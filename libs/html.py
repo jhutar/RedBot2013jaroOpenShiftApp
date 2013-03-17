@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
+# TODO: we should be HTML escaping whenever we print something
+
 def header(title='Ahoy!'):
   ret = ''
   ret += '''<!doctype html>
@@ -58,6 +60,33 @@ def header(title='Ahoy!'):
 </head>
 <body>'''
   ret += "  <h1>%s</h1>" % title
+  return ret
+
+def welcome():
+  return '''<p>Log-in first please.</p>'''
+
+def form_create_new_game(mystrategies):
+  ret = '<h2>Create new game</h2>'
+  ret += '<form method="POST" action="/game/new">'
+  ret += '<select name="strat1">'
+  for s in mystrategies:
+    ret += '<option value="%s">%s</option>' % (s['label'], s['name'])
+  ret += '</select>'
+  ret += '<select name="strat2">'
+  for s in mystrategies:
+    ret += '<option value="%s">%s</option>' % (s['label'], s['name'])
+  ret += '</select>'
+  ret += '<input type="submit"/>'
+  ret += '</form>'
+  return ret
+
+def show_game(mygame):
+  ret = '<h2>Game %s</h2>' % mygame.gameid
+  ret += '<p>Owner: %s</p>' % mygame.owner
+  ret += '<p>Directory: %s</p>' % mygame.gamedir
+  ret += '<p>Strategy 1: %s</p>' % mygame.strat1
+  ret += '<p>Strategy 2: %s</p>' % mygame.strat2
+  ret += '<p>Rounds played: %s</p>' % mygame.round
   return ret
 
 def footer():
