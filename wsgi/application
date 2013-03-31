@@ -19,6 +19,7 @@ import os
 import sys
 import datetime
 import traceback
+import io
 
 sys.path.append('./libs')
 import pages
@@ -30,9 +31,16 @@ def application(environ, start_response):
   status = '200 OK'
   response_body = ''
   response_headers_added = []
-
+  #print environ
+  
   try:
-    if environ['PATH_INFO'] == '/':
+    if environ['PATH_INFO'] == '/menu':
+      if pages.is_authorized(environ):
+        response_body += pages.menu(environ)
+      else:
+        status = '401 Authorization Required'
+        response_headers_added.append(('WWW-Authenticate', 'Basic realm="RedBot: Authenticated section"'))
+    elif environ['PATH_INFO'] == '/':
       response_body += pages.main(environ)
     elif environ['PATH_INFO'].startswith('/game'):
       if pages.is_authorized(environ):
@@ -48,6 +56,24 @@ def application(environ, start_response):
           response_body += pages.game_show(environ)
         else:
           raise Exception('Was not able to determine if you want me to create new game of show current one')
+      else:
+        status = '401 Authorization Required'
+        response_headers_added.append(('WWW-Authenticate', 'Basic realm="RedBot: Authenticated section"'))
+    elif environ['PATH_INFO'].startswith('/user'):
+      if environ['PATH_INFO']==('/user'):
+        response_body+=pages.user(environ)
+      elif environ['PATH_INFO']==('/user/new'):
+        response_body+=pages.user_new(environ)
+      else:
+          raise Exception('Was not able to determine if you want me to create new user or delete other user.')
+    elif environ['PATH_INFO'].startswith('/strat'):
+      if pages.is_authorized(environ):
+        if environ['PATH_INFO']==('/strat'):
+          response_body+=pages.strategy(environ)
+        elif environ['PATH_INFO']==('/strat/new'):
+          response_body+=pages.strategy_new(environ)
+        else:
+            raise Exception('Was not able to determine if you want me to create new user or delete other user.')
       else:
         status = '401 Authorization Required'
         response_headers_added.append(('WWW-Authenticate', 'Basic realm="RedBot: Authenticated section"'))

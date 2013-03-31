@@ -63,7 +63,15 @@ def header(title='Ahoy!'):
   return ret
 
 def welcome():
-  return '''<p>Log-in first please.</p>'''
+  return '''<p><a href="/menu">Log-in<a> or <a href="/user">Sign-up</a>.</p>'''
+
+def menu():
+    return '''<h2>Menu<h2>
+    <ul>
+    <li><a href="/game">Play a game<a></li>
+    <li><a href="/strat">Upload a strategy<a></li>
+    </ul>
+    '''
 
 def form_create_new_game(mystrategies):
   ret = '<h2>Create new game</h2>'
@@ -88,6 +96,30 @@ def show_game(mygame):
   ret += '<p>Strategy 2: %s</p>' % mygame.strat2
   ret += '<p>Rounds played: %s</p>' % mygame.round
   return ret
+
+def form_create_new_user():
+  ret = '<h2>Create new user</h2>'
+  ret += '<form method="POST" action="/user/new">'
+  ret += 'Username: <input type="text" name="username"></input><br>'
+  ret += 'Password: <input type="text" name="password"></input><br>'
+  ret += '<input type="submit" value="Create!"/>'
+  ret += '</form>'
+  return ret
+
+def form_new_strategy():
+  ret = '<h2>Upload new strategy</h2>'
+  ret += '<form enctype="multipart/form-data"  method="POST" action="/strat/new">'
+  ret += 'Name: <input type="text" name="name" id="name"></input><br>'
+  ret += 'File: <input type="file" name="file" id="file"></input><br>'
+  ret += '<input type="submit" value="Upload!"/>'
+  ret += '</form>'
+  return ret
+
+def user_new(username):
+    return 'User "%s" was created.'%username
+
+def strat_new():
+    return 'Strategy was uploaded.'
 
 def footer():
   return '''</body>

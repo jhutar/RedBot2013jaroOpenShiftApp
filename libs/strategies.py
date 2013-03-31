@@ -5,9 +5,10 @@ import os
 import path
 import csv
 import shutil
+import subprocess
 
 # Columns of stategies.csv
-# | label | is_automated | name | description |
+# | label | is_automated | name | author |
 
 class Strategy:
   def __init__(self, strategie_name):
@@ -24,11 +25,11 @@ class Strategy:
         self.label = row[0]
         self.name = row[1]
         self.is_automated = int(row[2])
-        self.description = row[3]
+        self.author = row[3]
         break
     assert self.name != None
     assert self.is_automated != None
-    assert self.description != None
+    assert self.author != None
 
   def deploy(self, stratdir, stratid):
     """Prepare strategy into directory 'stratdir' as 'stratid'."""
@@ -54,11 +55,25 @@ def get_strategies():
     out.append({'label': row[0], 'name': row[1], 'is_automated': int(row[2]), 'description': row[3]})
   return out
 
-
+def add_strategy(name, strat, author):
+  strategies_csv=csv.reader(open(path.data_path('strategies.csv'),'r'))
+  if not name or not strat or not author:
+    raise Exception('Bad data.') 
+  exists=False
+  for row in strategies_csv:
+    if row[0]==name and row[3]!=author:
+      raise Exception('Strategy {0} is already used by {1}.'.format(name, row[3]))
+    if row[0]==name and row[3]==author:
+      exists=True
+  if not exists:
+    strategies_csv=csv.writer(open(path.data_path('strategies.csv'),'a'))
+    strategies_csv.writerow([name, name, "1", author])
+  print >>open(path.data_path('strategies/'+name), 'w'), strat,
+  subprocess.call(["chmod", "+x", path.data_path('strategies/'+name)])
 
 if __name__ == '__main__':
   a = Strategy('strilej')
   print 'Strategy label', a.label
   print 'Strategy name', a.name
   print 'Strategy is automated', a.is_automated
-  print 'Strategy description', a.description
+  print 'Strategy author', a.author
