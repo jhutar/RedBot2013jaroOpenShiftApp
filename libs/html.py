@@ -3,7 +3,7 @@
 
 # TODO: we should be HTML escaping whenever we print something
 
-def header(title='Ahoy!'):
+def header(title='Ahoy!', show_menu=True):
   ret = ''
   ret += '''<!doctype html>
 <html lang="en">
@@ -14,7 +14,9 @@ def header(title='Ahoy!'):
   ret += '''
   <style>
   html { 
-  background: black; 
+  background: black;
+  min-height: 100%;
+  min-width:100%;
   }
   body {
     background: #333;
@@ -27,6 +29,7 @@ def header(title='Ahoy!'):
     width: 40em;
     margin: 0 auto;
     padding: 3em;
+   
   }
   a {
     color: white;
@@ -60,18 +63,19 @@ def header(title='Ahoy!'):
 </head>
 <body>'''
   ret += "  <h1>%s</h1>" % title
+  if(show_menu):
+    ret+='''<div style="float: left; width: 20;"><ul>
+  <li><a href="/game">Play a game</a></li>
+  <li><a href="/strat">Upload a strategy</a></li>
+  </ul></div>
+  <div style="float: right;">'''
   return ret
 
 def welcome():
   return '''<p><a href="/menu">Log-in<a> or <a href="/user">Sign-up</a>.</p>'''
 
 def menu():
-    return '''<h2>Menu<h2>
-    <ul>
-    <li><a href="/game">Play a game<a></li>
-    <li><a href="/strat">Upload a strategy<a></li>
-    </ul>
-    '''
+    return '''Welcome.'''
 
 def form_create_new_game(mystrategies):
   ret = '<h2>Create new game</h2>'
@@ -100,8 +104,8 @@ def show_game(mygame):
 def form_create_new_user():
   ret = '<h2>Create new user</h2>'
   ret += '<form method="POST" action="/user/new">'
-  ret += 'Username: <input type="text" name="username"></input><br>'
-  ret += 'Password: <input type="text" name="password"></input><br>'
+  ret += 'Username: <input type="text" name="username"><br>'
+  ret += 'Password: <input type="text" name="password"><br>'
   ret += '<input type="submit" value="Create!"/>'
   ret += '</form>'
   return ret
@@ -109,8 +113,8 @@ def form_create_new_user():
 def form_new_strategy():
   ret = '<h2>Upload new strategy</h2>'
   ret += '<form enctype="multipart/form-data"  method="POST" action="/strat/new">'
-  ret += 'Name: <input type="text" name="name" id="name"></input><br>'
-  ret += 'File: <input type="file" name="file" id="file"></input><br>'
+  ret += 'Name: <input type="text" name="name" id="name"><br>'
+  ret += 'File: <input type="file" name="file" id="file"><br>'
   ret += '<input type="submit" value="Upload!"/>'
   ret += '</form>'
   return ret
@@ -122,5 +126,6 @@ def strat_new():
     return 'Strategy was uploaded.'
 
 def footer():
-  return '''</body>
+  return '''</div>
+</body>
 </html>'''

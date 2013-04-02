@@ -19,7 +19,7 @@ def is_authorized(environ):
   return u.is_valid(auth)
 
 def main(environ):
-  response_body = html.header('Ahoy!')
+  response_body = html.header('Ahoy!', False)
   response_body += html.welcome()
   response_body += html.footer()
   return response_body
