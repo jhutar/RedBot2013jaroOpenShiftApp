@@ -52,7 +52,7 @@ def get_strategies():
   out = []
   strategies_csv = csv.reader(open(path.data_path('strategies.csv'),'r'))
   for row in strategies_csv:
-    out.append({'label': row[0], 'name': row[1], 'is_automated': int(row[2]), 'description': row[3]})
+    out.append({'label': row[0], 'name': row[1], 'is_automated': int(row[2]), 'author': row[3]})
   return out
 
 def add_strategy(name, strat, author):
@@ -70,6 +70,29 @@ def add_strategy(name, strat, author):
     strategies_csv.writerow([name, name, "1", author])
   print >>open(path.data_path('strategies/'+name), 'w'), strat,
   subprocess.call(["chmod", "+x", path.data_path('strategies/'+name)])
+
+def get_users_strategies(username):
+  strats=get_strategies()
+  ret=[]
+  for s in strats:
+    if s['author']==username:
+      ret.append(s)
+  return ret
+
+def delete_stategy(label, username):
+  strats=get_strategies()
+  new=[]
+  for s in strats:
+    if s['label']!=label:
+      new.append(s)
+    else:
+      if s['author']!=username:
+        raise Exception('You cant do this.')
+      else:
+        os.remove(path.data_path('strategies/'+s['label']))
+  writer=csv.writer(open(path.data_path('strategies.csv'),'w'))
+  for s in new:
+    writer.writerow([s['label'], s['name'], s['is_automated'], s['author']])
 
 if __name__ == '__main__':
   a = Strategy('strilej')

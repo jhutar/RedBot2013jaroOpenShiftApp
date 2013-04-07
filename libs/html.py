@@ -67,6 +67,7 @@ def header(title='Ahoy!', show_menu=True):
     ret+='''<div style="float: left; width: 20;"><ul>
   <li><a href="/game">Play a game</a></li>
   <li><a href="/strat">Upload a strategy</a></li>
+  <li><a href="/strats">Show my strategies</a></li>
   </ul></div>
   <div style="float: right;">'''
   return ret
@@ -120,10 +121,20 @@ def form_new_strategy():
   return ret
 
 def user_new(username):
-    return 'User "%s" was created.'%username
+  return 'User "%s" was created.'%username
 
 def strat_new():
-    return 'Strategy was uploaded.'
+  return 'Strategy was uploaded.'
+
+def strats(strats):
+  r='<ul>'
+  for s in strats:
+    r+='<li>{0} <a href="/strats/delete/{1}">delete</a></li>'.format(s['name'], s['label'])
+  r+='</ul>'
+  return r
+
+def strat_delete(label):
+  return 'Strategy \"{0}\" was deleted.'.format(label)
 
 def footer():
   return '''</div>

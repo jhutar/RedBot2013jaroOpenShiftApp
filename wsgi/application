@@ -66,6 +66,18 @@ def application(environ, start_response):
         response_body+=pages.user_new(environ)
       else:
           raise Exception('Was not able to determine if you want me to create new user or delete other user.')
+    elif environ['PATH_INFO'].startswith('/strats'):
+      if pages.is_authorized(environ):
+        uri = environ['PATH_INFO'].split('/')
+        if environ['PATH_INFO'] == '/strats':
+          response_body += pages.strats(environ)
+        elif environ['PATH_INFO'].startswith('/strats/delete/'):
+          response_body+=pages.strats_delete(environ)
+        else:
+          raise Exception('Was not able to determine if you want to show your strategies or delete one')
+      else:
+        status = '401 Authorization Required'
+        response_headers_added.append(('WWW-Authenticate', 'Basic realm="RedBot: Authenticated section"'))
     elif environ['PATH_INFO'].startswith('/strat'):
       if pages.is_authorized(environ):
         if environ['PATH_INFO']==('/strat'):

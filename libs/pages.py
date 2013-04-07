@@ -60,17 +60,17 @@ def strategy(environ):
   return response_body
 
 def read(environ):
-    length = int(environ.get('CONTENT_LENGTH', 0))
-    stream = environ['wsgi.input']
-    body = TemporaryFile(mode='w+b')
-    while length > 0:
-        part = stream.read(min(length, 1024*200)) # 200KB buffer size
-        if not part: break
-        body.write(part)
-        length -= len(part)
-    body.seek(0)
-    environ['wsgi.input'] = body
-    return body
+  length = int(environ.get('CONTENT_LENGTH', 0))
+  stream = environ['wsgi.input']
+  body = TemporaryFile(mode='w+b')
+  while length > 0:
+    part = stream.read(min(length, 1024*200)) # 200KB buffer size
+    if not part: break
+    body.write(part)
+    length -= len(part)
+  body.seek(0)
+  environ['wsgi.input'] = body
+  return body
 
 def strategy_new(environ):
   body=read(environ)
@@ -79,6 +79,25 @@ def strategy_new(environ):
   username, password = auth.decode('base64').split(':', 1)
   strategies.add_strategy(form.getvalue("name") ,form.getvalue("file"), username)
   return html.header('Ahoy!')+html.strat_new()+html.footer()
+
+def strats(environ):
+  auth = environ['HTTP_AUTHORIZATION'].split(' ')[1]
+  username, password = auth.decode('base64').split(':', 1)
+  strats=strategies.get_users_strategies(username)
+  response_body=html.header('Ahoy!')
+  response_body+=html.strats(strats)
+  response_body+=html.footer()
+  return response_body
+
+def strats_delete(environ):
+  auth = environ['HTTP_AUTHORIZATION'].split(' ')[1]
+  username, password = auth.decode('base64').split(':', 1)
+  label=environ['PATH_INFO'].split('/')[-1]
+  strategies.delete_stategy(label, username)
+  response_body=html.header('Ahoy!')
+  response_body+=html.strat_delete(label)
+  response_body+=html.footer()
+  return response_body
 
 def game_show(environ):
   response_body = html.header('Ahoy!')
