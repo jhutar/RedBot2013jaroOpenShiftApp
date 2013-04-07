@@ -15,6 +15,7 @@ def header(title='Ahoy!', show_menu=True):
   <style>
   html { 
   background: black;
+  height: 100%;
   min-height: 100%;
   min-width:100%;
   }
@@ -29,6 +30,7 @@ def header(title='Ahoy!', show_menu=True):
     width: 40em;
     margin: 0 auto;
     padding: 3em;
+    height: 100%;
    
   }
   a {
