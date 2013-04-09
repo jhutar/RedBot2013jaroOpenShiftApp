@@ -66,6 +66,7 @@ def header(title='Ahoy!', show_menu=True):
   <li><a href="/game">Play a game</a></li>
   <li><a href="/strat">Upload a strategy</a></li>
   <li><a href="/strats">Show my strategies</a></li>
+  <li><a href="/delete">Delete this profile</a></li>
   </ul></div>
   <div style="float: right;">'''
   return ret
@@ -133,6 +134,9 @@ def strats(strats):
 
 def strat_delete(label):
   return 'Strategy \"{0}\" was deleted.'.format(label)
+
+def delete():
+  return 'Do you really want to delete yourself?<br><a href="/delete/yes">Yes</a> or <a href="/menu">No</a>.'
 
 def footer():
   return '''</div>

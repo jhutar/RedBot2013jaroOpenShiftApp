@@ -89,6 +89,17 @@ def application(environ, start_response):
       else:
         status = '401 Authorization Required'
         response_headers_added.append(('WWW-Authenticate', 'Basic realm="RedBot: Authenticated section"'))
+    elif environ['PATH_INFO'].startswith('/delete'):
+      if pages.is_authorized(environ):
+        if environ['PATH_INFO']==('/delete'):
+          response_body+=pages.delete(environ)
+        elif environ['PATH_INFO']==('/delete/yes'):
+          response_body+=pages.delete_yes(environ)
+        else:
+            raise Exception('Was not able to determine if you want me to create new user or delete other user.')
+      else:
+        status = '401 Authorization Required'
+        response_headers_added.append(('WWW-Authenticate', 'Basic realm="RedBot: Authenticated section"'))
     else:
       raise Exception('Unknown path')
   except:

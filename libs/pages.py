@@ -99,6 +99,19 @@ def strats_delete(environ):
   response_body+=html.footer()
   return response_body
 
+def delete(environ):
+  response_body=html.header('Ahoy!')
+  response_body+=html.delete()
+  response_body+=html.footer()
+  return response_body
+
+def delete_yes(environ):
+  auth = environ['HTTP_AUTHORIZATION'].split(' ')[1]
+  username, password = auth.decode('base64').split(':', 1)
+  u=users.User(username)
+  u.delete()
+  return main(environ)
+
 def game_show(environ):
   response_body = html.header('Ahoy!')
   uri = environ['PATH_INFO'].split('/')
