@@ -106,6 +106,7 @@ def form_create_new_user():
   ret += '<form method="POST" action="/user/new">'
   ret += 'Username: <input type="text" name="username"><br>'
   ret += 'Password: <input type="text" name="password"><br>'
+  ret += '2+7*2-8: <input type="text" name="test"><br>'
   ret += '<input type="submit" value="Create!"/>'
   ret += '</form>'
   return ret

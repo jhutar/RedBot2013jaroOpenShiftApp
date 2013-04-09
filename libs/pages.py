@@ -42,16 +42,18 @@ def game_new(environ):
   return g
 
 def user(environ):
-  response_body = html.header('Ahoy!')
+  response_body = html.header('Ahoy!', False)
   response_body += html.form_create_new_user()
   response_body += html.footer()
   return response_body
 
 def user_new(environ):
   post = path.get_post_array(environ)
+  if post['test'][0]!="8":
+    raise Exception('Begone!')
   u=users.User(post['username'][0])
   u.add_user(post['password'][0])
-  return html.header('Ahoy!')+html.user_new(post['username'][0])+html.footer()
+  return html.header('Ahoy!', False)+html.user_new(post['username'][0])+html.footer()
 
 def strategy(environ):
   response_body = html.header('Ahoy!')
