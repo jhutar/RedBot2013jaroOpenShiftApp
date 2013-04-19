@@ -5,6 +5,8 @@ import csv
 import path
 import base64
 
+import strategies
+
 # Columns of users.csv
 # | username | base64str | is_admin |
 # TODO: replace base64str with hashed password
@@ -59,7 +61,18 @@ class User():
   def delete(self, target=None):
     """Delete given user. If user not provided (or set to None) delete
     yourself. Only admin can delete other users."""
-    pass   # TODO: implement this
+    if not target:
+      target=self.username
+    strats=strategies.get_users_strategies(target)
+    for s in strats:
+      strategies.delete_stategy(s['label'], target)
+    users_csv = csv.reader(open(path.data_path('users.csv'),'r'))
+    new=[]
+    for u in users_csv:
+      if u[0]!=target:
+        new.append(u)
+    users_csv=csv.writer(open(path.data_path('users.csv'),'w'))
+    users_csv.writerows(new)
 
 
 

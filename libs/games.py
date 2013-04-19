@@ -75,6 +75,7 @@ class Game():
     if not ( self.strat1.is_ready(self.gamedir, self.strat1id, round) \
         and self.strat2.is_ready(self.gamedir, self.strat2id, round) ):
       return False
+    d=os.getcwd()
     os.chdir(self.gamedir)
     #print "DEBUG: Playing %s. round" % round
     p = subprocess.Popen(['./redbot', '-b', 'replay', os.path.join(self.strat1id, self.strat1.label), os.path.join(self.strat2id, self.strat2.label)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)   # TODO: there should be some limit for parallel redbot processes count
@@ -83,6 +84,7 @@ class Game():
     ###self.round += 1
     self.round = 150
     self.dump_ini()
+    os.chdir(d)
 
   def cleanup(self):
     shutil.rmtree(self.gamedir)
